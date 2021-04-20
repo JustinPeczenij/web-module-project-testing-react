@@ -26,14 +26,24 @@ test('Display renders without any passed in props', () => {
 test('When the fetch button is pressed, the show component displays', async () => {
     mockFetchShow.mockResolvedValueOnce(testShow);
     render(<Display />)
-    
-
     userEvent.click(screen.getByRole('button', { name: /press to get show data/i }))
-
     expect(await screen.findByTestId('show-container')).toBeInTheDocument();
 })
 
+test('when fetch button pressed, select options match amount of those rendered', async () => {
+    mockFetchShow.mockResolvedValueOnce(testShow);
+    render(<Display />);
+    userEvent.click(screen.getByRole('button', { name: /press to get show data/i }));
+    expect(await screen.findAllByTestId('season-option')).toHaveLength(4);
+})
 
+test('when fetch button pressed, displayFunc is called', async () => {
+    const mockDisplayFunc = jest.fn();
+    mockFetchShow.mockResolvedValueOnce(testShow);
+    render(<Display displayFunc={mockDisplayFunc} />);
+    userEvent.click(screen.getByRole('button', { name: /press to get show data/i }));
+    expect(await mockDisplayFunc).toHaveBeenCalled();
+})
 
 
 
