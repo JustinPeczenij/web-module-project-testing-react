@@ -3,19 +3,17 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import Show from './../Show';
-import Loading from './../Loading';
+import Display from './../Display';
 
 const testShow = {
-
-        name: 'Justin',
-        summary: 'this is the summary',
-        seasons: [
-            {id:0, name: "Season 1", episodes: []}, 
-            {id:1, name: "Season 2", episodes: []}, 
-            {id:2, name: "Season 3", episodes: []}, 
-            {id:3, name: "Season 4", episodes: []}
-        ]
-    
+    name: 'Justin',
+    summary: 'this is the summary',
+    seasons: [
+        {id:0, name: "Season 1", episodes: []}, 
+        {id:1, name: "Season 2", episodes: []}, 
+        {id:2, name: "Season 3", episodes: []}, 
+        {id:3, name: "Season 4", episodes: []}
+    ]
 }
 
 test('renders testShow and no selected Season without errors', ()=>{
@@ -28,12 +26,22 @@ test('renders Loading component when prop show is null', () => {
 });
 
 test('renders same number of options seasons are passed in', ()=>{
+    render(<Show show={testShow} selectedSeason={'none'}/>)
+    expect(screen.getAllByTestId("season-option")).toHaveLength(4);
 });
 
 test('handleSelect is called when an season is selected', () => {
+    const mockHandleSelect = jest.fn();
+    render(<Show show={testShow} selectedSeason={'none'} handleSelect={mockHandleSelect} />);
+    userEvent.selectOptions(screen.getByRole('combobox'), '1');
+    expect(mockHandleSelect).toHaveBeenCalledTimes(1);
 });
 
 test('component renders when no seasons are selected and when rerenders with a season passed in', () => {
+    const { rerender } = render(<Show show={testShow} selectedSeason={'none'} />)
+    expect(screen.queryByAltText('./stranger_things.png')).toBeNull();
+    rerender(<Show show={testShow} selectedSeason={'1'} />)
+    expect(screen.queryAllByAltText('./stranger_things.png')).toEqual([]);
 });
 
 //Tasks:
